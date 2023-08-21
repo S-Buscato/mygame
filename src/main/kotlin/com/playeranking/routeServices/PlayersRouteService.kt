@@ -16,4 +16,18 @@ class PlayersRouteService(private val playerService: PlayerService) {
         return playerService.savePlayer(player)
     }
 
+    suspend fun getAllPlayersSortedByScore(): List<Player> {
+        val players = playerService.getAllPlayers()
+        return players.sortedByDescending { it.score } // Tri décroissant par score
+    }
+
+    suspend fun updatePlayer(pseudo: String, updatedPlayer: Player): Boolean {
+        val success = playerService.replaceOneByPseudo(pseudo, updatedPlayer)
+        return success
+    }
+
+    suspend fun deleteAllPlayers(): Boolean {
+        return playerService.deleteAllPlayers()
+    }
+
 }

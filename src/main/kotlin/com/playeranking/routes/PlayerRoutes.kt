@@ -14,12 +14,12 @@ import org.litote.kmongo.eq
 fun Route.playersRoutes() {
     val playersRouteService: PlayersRouteService by inject()
 
-    get("/player") {
+    get("/players") {
         val players = playersRouteService.getAllPlayers()
         call.respond(players)
     }
 
-    get("/player/{pseudo}") {
+    get("/players/{pseudo}") {
         val pseudo = call.parameters["pseudo"] ?: throw IllegalArgumentException("Player pseudo missing")
         val player = playersRouteService.getPlayerByPseudo(Player::pseudo eq pseudo)
         if (player != null) {
@@ -27,6 +27,11 @@ fun Route.playersRoutes() {
         } else {
             call.respondText("Player not found", status = HttpStatusCode.NotFound)
         }
+    }
+
+    get("/players/sortedByScore") {
+        val playersSortedByScore = playersRouteService.getAllPlayersSortedByScore()
+        call.respond(playersSortedByScore)
     }
 
     post("/player") {
@@ -38,4 +43,25 @@ fun Route.playersRoutes() {
             call.respondText("Failed to save player", status = HttpStatusCode.InternalServerError)
         }
     }
+
+    put("/players/update/{pseudo}") {
+        val pseudo = call.parameters["pseudo"] ?: throw IllegalArgumentException("Player pseudo missing")
+        val updatedPlayer = call.receive<Player>()
+        val success = playersRouteService.updatePlayer(pseudo, updatedPlayer)
+        if (success) {
+            call.respondText("Player updated successfully")
+        } else {
+            call.respondText("Failed to update player", status = HttpStatusCode.InternalServerError)
+        }
+    }
+
+    delete("/players") {
+        val success = playersRouteService.deleteAllPlayers()
+        if (success) {
+            call.respondText("All players deleted successfully")
+        } else {
+            call.respondText("Failed to delete players", status = HttpStatusCode.InternalServerError)
+        }
+    }
+
 }

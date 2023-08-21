@@ -5,6 +5,7 @@ import com.playeranking.services.PlayerService
 import org.bson.conversions.Bson
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
 
 class PlayerServiceImpl : PlayerService {
@@ -22,5 +23,14 @@ class PlayerServiceImpl : PlayerService {
         val result = playerCollection.insertOne(player)
         return result.wasAcknowledged()    }
 
+    override suspend fun replaceOneByPseudo(pseudo: String, updatedPlayer: Player): Boolean {
+        val result = playerCollection.replaceOne(Player::pseudo eq pseudo, updatedPlayer)
+        return result.wasAcknowledged()
+    }
+
+    override suspend fun deleteAllPlayers(): Boolean {
+        val result = playerCollection.deleteMany("{}")
+        return result.wasAcknowledged()
+    }
 
 }
