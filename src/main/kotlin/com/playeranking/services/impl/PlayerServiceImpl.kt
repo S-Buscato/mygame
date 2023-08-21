@@ -17,5 +17,10 @@ class PlayerServiceImpl : PlayerService {
 
     override suspend fun getPlayerByPseudo(pseudo: Bson): Player? {
         return playerCollection.findOne(pseudo)    }
-    
+
+    override suspend fun savePlayer(player: Player): Boolean {
+        val result = playerCollection.insertOne(player)
+        return result.wasAcknowledged()    }
+
+
 }

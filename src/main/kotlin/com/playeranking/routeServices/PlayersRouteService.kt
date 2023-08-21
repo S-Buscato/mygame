@@ -1,10 +1,10 @@
-package com.playeranking.controllers
+package com.playeranking.routeServices
 
 import com.playeranking.models.Player
 import com.playeranking.services.PlayerService
 import org.bson.conversions.Bson
 
-class PlayersControllers(private val playerService: PlayerService) {
+class PlayersRouteService(private val playerService: PlayerService) {
     suspend fun getAllPlayers(): List<Player> {
         return playerService.getAllPlayers()
     }
@@ -12,4 +12,8 @@ class PlayersControllers(private val playerService: PlayerService) {
     suspend fun getPlayerByPseudo(pseudo: Bson): Player? {
         return playerService.getPlayerByPseudo(pseudo)
     }
+    suspend fun savePlayer(player: Player): Boolean {
+        return playerService.savePlayer(player)
+    }
+
 }
