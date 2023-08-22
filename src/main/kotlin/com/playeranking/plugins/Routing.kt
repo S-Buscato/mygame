@@ -16,6 +16,8 @@ fun Application.configureRouting() {
     }
 
     routing {
-        playersRoutes()
+        route("/api") {
+            playersRoutes()
+        }
     }
 }
