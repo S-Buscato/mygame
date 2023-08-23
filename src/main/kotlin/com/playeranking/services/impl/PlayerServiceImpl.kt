@@ -8,9 +8,9 @@ import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
 
-class PlayerServiceImpl : PlayerService {
+class PlayerServiceImpl() : PlayerService {
     private val database: CoroutineDatabase = KMongo.createClient("mongodb://localhost:27017").coroutine.getDatabase("mygame")
-    private val playerCollection = database.getCollection<Player>("player")
+    private val playerCollection = this.database.getCollection<Player>("player")
 
     override suspend fun getAllPlayers(): List<Player> {
         return playerCollection.find().toList()
@@ -32,5 +32,6 @@ class PlayerServiceImpl : PlayerService {
         val result = playerCollection.deleteMany("{}")
         return result.wasAcknowledged()
     }
+
 
 }

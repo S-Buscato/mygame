@@ -4,6 +4,7 @@ import com.playeranking.models.Player
 import com.playeranking.services.PlayerService
 import org.bson.conversions.Bson
 
+
 class PlayersRouteService(private val playerService: PlayerService) {
     suspend fun getAllPlayers(): List<Player> {
         return playerService.getAllPlayers()
@@ -18,7 +19,8 @@ class PlayersRouteService(private val playerService: PlayerService) {
 
     suspend fun getAllPlayersSortedByScore(): List<Player> {
         val players = playerService.getAllPlayers()
-        return players.sortedByDescending { it.score } // Tri décroissant par score
+
+        return players.sortedByDescending { it.score.toInt() } // Tri décroissant par score
     }
 
     suspend fun updatePlayer(pseudo: String, updatedPlayer: Player): Boolean {
@@ -28,6 +30,10 @@ class PlayersRouteService(private val playerService: PlayerService) {
 
     suspend fun deleteAllPlayers(): Boolean {
         return playerService.deleteAllPlayers()
+    }
+    suspend fun playerIsExists(pseudo: Bson): Boolean {
+        val player = playerService.getPlayerByPseudo(pseudo)
+        return player != null
     }
 
 }

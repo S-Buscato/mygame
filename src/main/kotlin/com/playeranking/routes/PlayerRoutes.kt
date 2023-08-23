@@ -49,12 +49,22 @@ fun Route.playersRoutes() {
         val player = call.receive<Player>()
         logger.info("route => post/players/ => ${player.pseudo} - ${player.score}")
 
-        val success = playersRouteService.savePlayer(player)
-        if (success) {
-            call.respondText("Player saved successfully", status = HttpStatusCode.Created)
-        } else {
-            call.respondText("Failed to save player", status = HttpStatusCode.InternalServerError)
-        }
+        val isExist = playersRouteService.playerIsExists(Player::pseudo eq player.pseudo)
+
+            val score : Int? = player.score.toIntOrNull()
+
+            if(isExist) {
+                call.respondText("Player all ready exists", status = HttpStatusCode.NotModified)
+            } else if (score == null) {
+                call.respondText("Score must be a number", status = HttpStatusCode.NotModified)
+            } else {
+                val success = playersRouteService.savePlayer(player)
+                if (success) {
+                    call.respondText("Player saved successfully", status = HttpStatusCode.Created)
+                } else {
+                    call.respondText("Failed to save player", status = HttpStatusCode.InternalServerError)
+                }
+            }
     }
 
     put("/players/update/{pseudo}") {
@@ -62,11 +72,18 @@ fun Route.playersRoutes() {
         val updatedPlayer = call.receive<Player>()
         logger.info("route => put/players/update/ => ${updatedPlayer.pseudo} - ${updatedPlayer.score}")
 
-        val success = playersRouteService.updatePlayer(pseudo, updatedPlayer)
-        if (success) {
-            call.respondText("Player updated successfully")
+        val isExist = playersRouteService.playerIsExists(Player::pseudo eq pseudo)
+
+        if(isExist) {
+            val success = playersRouteService.updatePlayer(pseudo, updatedPlayer)
+
+            if (success) {
+                call.respondText("Player updated successfully")
+            } else {
+                call.respondText("Failed to update player", status = HttpStatusCode.InternalServerError)
+            }
         } else {
-            call.respondText("Failed to update player", status = HttpStatusCode.InternalServerError)
+            call.respondText("Player does not exists", status = HttpStatusCode.NotFound)
         }
     }
 
