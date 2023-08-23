@@ -9,18 +9,27 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import org.litote.kmongo.eq
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 
 fun Route.playersRoutes() {
     val playersRouteService: PlayersRouteService by inject()
+    val logger: Logger = LoggerFactory.getLogger(Application::class.java)
+
 
     get("/players") {
+        logger.info("route => getAllplayers")
+
         val players = playersRouteService.getAllPlayers()
         call.respond(players)
     }
 
     get("/players/{pseudo}") {
+
         val pseudo = call.parameters["pseudo"] ?: throw IllegalArgumentException("Player pseudo missing")
+        logger.info("route => get/players/$pseudo")
+
         val player = playersRouteService.getPlayerByPseudo(Player::pseudo eq pseudo)
         if (player != null) {
             call.respond(player)
@@ -30,12 +39,16 @@ fun Route.playersRoutes() {
     }
 
     get("/players/sortedByScore") {
+        logger.info("route => get/players/sortedByScore")
+
         val playersSortedByScore = playersRouteService.getAllPlayersSortedByScore()
         call.respond(playersSortedByScore)
     }
 
     post("/player") {
         val player = call.receive<Player>()
+        logger.info("route => post/players/ => ${player.pseudo} - ${player.score}")
+
         val success = playersRouteService.savePlayer(player)
         if (success) {
             call.respondText("Player saved successfully", status = HttpStatusCode.Created)
@@ -47,6 +60,8 @@ fun Route.playersRoutes() {
     put("/players/update/{pseudo}") {
         val pseudo = call.parameters["pseudo"] ?: throw IllegalArgumentException("Player pseudo missing")
         val updatedPlayer = call.receive<Player>()
+        logger.info("route => put/players/update/ => ${updatedPlayer.pseudo} - ${updatedPlayer.score}")
+
         val success = playersRouteService.updatePlayer(pseudo, updatedPlayer)
         if (success) {
             call.respondText("Player updated successfully")
@@ -56,6 +71,8 @@ fun Route.playersRoutes() {
     }
 
     delete("/players") {
+        logger.info("route => delete/players")
+
         val success = playersRouteService.deleteAllPlayers()
         if (success) {
             call.respondText("All players deleted successfully")
