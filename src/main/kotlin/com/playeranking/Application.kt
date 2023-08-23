@@ -7,9 +7,13 @@ import com.playeranking.plugins.configureSerialization
 import com.playeranking.routeServices.PlayersRouteService
 import com.playeranking.services.PlayerService
 import com.playeranking.services.impl.PlayerServiceImpl
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
+import io.ktor.server.plugins.contentnegotiation.*
+import kotlinx.serialization.json.Json
+import org.koin.core.context.GlobalContext
 import org.koin.ktor.plugin.Koin
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.slf4j.Logger
@@ -28,6 +32,12 @@ fun main(args: Array<String>) {
 fun Application.module() {
 
     val app = org.koin.dsl.module {
+        install(ContentNegotiation) {
+            json(Json {
+                // Configurez ici les paramètres de sérialisation si nécessaire
+                prettyPrint = true // Par exemple, pour une mise en forme lisible
+            })
+        }
 
         single { PlayerServiceImpl() as PlayerService }
         single { PlayersRouteService(get()) }
@@ -37,13 +47,16 @@ fun Application.module() {
         return CoroutineDatabase(this)
     }
 
-    install(Koin) {
-        modules(app)
-        configureMonitoring()
-        configureSerialization()
-        //configureSecurity()
-        configureRouting()
+    if (GlobalContext.getOrNull() == null) {
+        install(Koin) {
+            modules(app)
+            configureMonitoring()
+            configureSerialization()
+            //configureSecurity()
+            configureRouting()
+        }
     }
+
 
 }
 
