@@ -47,6 +47,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     implementation("io.insert-koin:koin-ktor:$koin_version")
     implementation("io.insert-koin:koin-logger-slf4j:$koin_version")
+    implementation("io.ktor:ktor-server-status-pages:$ktor_version")
+
 
 
     //tests
@@ -68,4 +70,5 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    implementation(kotlin("script-runtime"))
 }
