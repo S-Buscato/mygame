@@ -1,8 +1,8 @@
 package com.playeranking.routes
 
 import com.playeranking.models.Player
-import com.playeranking.routeServices.PlayersRouteService
 import com.playeranking.services.PlayerService
+import com.playeranking.services.impl.PlayerServiceImpl
 import io.ktor.client.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
@@ -26,8 +26,7 @@ import kotlin.test.assertEquals
 
 internal class PlayerRoutesKtTest : KoinTest {
 
-    private val playersRouteService = mockk<PlayersRouteService>()
-    private val playerService = mockk<PlayerService>()
+    private val playerService = mockk<PlayerServiceImpl>()
 
     @BeforeTest
     fun setup() {
@@ -35,7 +34,6 @@ internal class PlayerRoutesKtTest : KoinTest {
         startKoin {
             modules(module {
                 single { playerService }
-                single { PlayersRouteService(get()) }
             })
         }
 
@@ -71,7 +69,7 @@ internal class PlayerRoutesKtTest : KoinTest {
             setBody(player)
         }
 
-        assertEquals(HttpStatusCode.NotModified, response.status)
+        assertEquals(HttpStatusCode.NotFound, response.status)
     }
 
     @Test
@@ -84,8 +82,7 @@ internal class PlayerRoutesKtTest : KoinTest {
 
         val player = Player("Alice", "not_a_number")
 
-        coEvery { playersRouteService.playerIsExists(any()) } returns false
-        coEvery { playerService.getPlayerByPseudo(any()) } returns null
+        coEvery { playerService.getPlayerByPseudo(any()) } returns player
 
         val response = client.post("/api/player") {
             contentType(ContentType.Application.Json)

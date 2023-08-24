@@ -4,7 +4,9 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlin.test.Ignore
 
+@Ignore
 fun Application.configureSecurity() {
     authentication {
         basic(name = "myauth1") {
